@@ -21,6 +21,24 @@
 ehthumbs.db
 Thumbs.db
 
+# This course specific #
+########################
 *.mp4
 gazebo.mat
+
+
+# Latex/pdflatex #
+##################
+*.aux
+*.lof
+*.log
+*.lot
+*.fls
+*.out
+*.toc
+*.fmt
+*.fot
+*.cb
+*.cb2
+.*.lb
 
