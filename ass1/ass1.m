@@ -2,13 +2,13 @@
 % ass1.m
 % ======
 %
-% This assignment will introduce you to the idea of estimating the motion 
+% This assignment will introduce you to the idea of estimating the motion
 % of a mobile robot using wheel odometry, and then also using that wheel
 % odometry to make a simple map.  It uses a dataset previously gathered in
 % a mobile robot simulation environment called Gazebo. Watch the video,
 % 'gazebo.mp4' to visualize what the robot did, what its environment
 % looks like, and what its sensor stream looks like.
-% 
+%
 % There are three questions to complete (5 marks each):
 %
 %    Question 1: code (noise-free) wheel odometry algorithm
@@ -65,7 +65,7 @@ theta_odom(1) = theta_true(1);
 
 % ------insert your wheel odometry algorithm here-------
 for i=2:numodom
-	% Note: we update the ith as current using (i-1) as previous
+    % Note: we update the ith as current using (i-1) as previous
     h = t_odom(i) - t_odom(i-1);
     theta_odom(i) = theta_odom(i-1) + omega_odom(i) * h;
     x_odom(i) = x_odom(i-1) + v_odom(i) * cos(theta_odom(i)) * h;
@@ -117,7 +117,7 @@ for i=1:numodom
     end
     while phi < -pi
         phi = phi + 2*pi;
-    end 
+    end
     theta_err(i) = phi;
 end
 plot(t_odom,theta_err,'b');
@@ -131,7 +131,7 @@ print -dpng ass1_q1.png
 % Question 2: add noise to data and re-run wheel odometry algorithm
 % =================================================================
 %
-% Now we're going to deliberately add some noise to the linear and 
+% Now we're going to deliberately add some noise to the linear and
 % angular velocities to simulate what real wheel odometry is like.  Copy
 % your wheel odometry algorithm from above into the indicated place below
 % to see what this does.  The below loops 100 times with different random
@@ -149,22 +149,22 @@ hold on;
 
 % loop over random trials
 for n=1:100
-    
+
     % add noise to wheel odometry measurements (yes, on purpose to see effect)
     v_odom = v_odom_noisefree + 0.2*randn(numodom,1);
     omega_odom = omega_odom_noisefree + 0.04*randn(numodom,1);
-    
+
     % ------insert your wheel odometry algorithm here-------
     for i=2:numodom
-    	% Same as Q1
-	    h = t_odom(i) - t_odom(i-1);
-	    theta_odom(i) = theta_odom(i-1) + omega_odom(i) * h;
-	    x_odom(i) = x_odom(i-1) + v_odom(i) * cos(theta_odom(i)) * h;
-	    y_odom(i) = y_odom(i-1) + v_odom(i) * sin(theta_odom(i)) * h;
-  
+        % Same as Q1
+        h = t_odom(i) - t_odom(i-1);
+        theta_odom(i) = theta_odom(i-1) + omega_odom(i) * h;
+        x_odom(i) = x_odom(i-1) + v_odom(i) * cos(theta_odom(i)) * h;
+        y_odom(i) = y_odom(i-1) + v_odom(i) * sin(theta_odom(i)) * h;
+
     end
-    % ------end of your wheel odometry algorithm------- 
-    
+    % ------end of your wheel odometry algorithm-------
+
     % add the results to the plot
     plot(x_odom, y_odom, 'r');
 end
@@ -186,13 +186,13 @@ print -dpng ass1_q2.png
 % robot's initial reference frame.  This will involve first figuring out
 % how to plot the points in the current frame, then transforming them back
 % to the initial frame and plotting them.  Do this for both the ground
-% truth pose (blue) and also the last noisy odometry that you calculated in 
+% truth pose (blue) and also the last noisy odometry that you calculated in
 % Question 2 (red).  At first even the map based on the ground truth may
 % not look too good.  This is because the laser timestamps and odometry
 % timestamps do not line up perfectly and you'll need to interpolate.  Even
 % after this, two additional patches will make your map based on ground
 % truth look as crisp as the one in 'ass1_q3_soln.png'.  The first patch is
-% to only plot the laser scans if the angular velocity is less than 
+% to only plot the laser scans if the angular velocity is less than
 % 0.1 rad/s; this is because the timestamp interpolation errors have more
 % of an effect when the robot is turning quickly.  The second patch is to
 % account for the fact that the origin of the laser scans is about 10 cm
@@ -217,7 +217,7 @@ x_i = zeros(1, size(y_laser,1)*size(y_laser,2));
 y_i = zeros(1, size(y_laser,1)*size(y_laser,2));
 
 for n=1:2
-    
+
     if n==1
         % interpolate the noisy odometry at the laser timestamps
         t_interp = linspace(t_odom(1),t_odom(numodom),numodom);
@@ -232,34 +232,34 @@ for n=1:2
         y_interp = interp1(t_interp,y_true,t_laser);
         theta_interp = interp1(t_interp,theta_true,t_laser);
         omega_interp = interp1(t_interp,omega_odom,t_laser);
-    end   
+    end
 
     % loop over laser scans
     for i=1:size(t_laser,1)
 
         % ------insert your point transformation algorithm here------
         % only plot the laser scans if angular velocity < 0.1 rad/s
-        if abs(omega_interp(i)) < 0.1 
+        if abs(omega_interp(i)) < 0.1
             %  Transform from laser frame -> vehicle frame
             x_v = y_laser(i,:) .* cos_angles;
             y_v = y_laser(i,:) .* sin_angles;
-            
-        	% Define homogeneous transformation H_{iv: vehicle -> inertial}
-        	sin_ang = sin(theta_interp(i));
-        	cos_ang = cos(theta_interp(i));
+
+            % Define homogeneous transformation H_{iv: vehicle -> inertial}
+            sin_ang = sin(theta_interp(i));
+            cos_ang = cos(theta_interp(i));
             H_iv = [cos_ang -sin_ang x_interp(i)-0.1*cos_ang;
-                	sin_ang  cos_ang y_interp(i)-0.1*sin_ang;
-                	0 		 0 		 1];
-            
+                    sin_ang  cos_ang y_interp(i)-0.1*sin_ang;
+                    0 		 0 		 1];
+
             % Transform from vehicle frame -> inertial frame
             xy_i = H_iv*[x_v; y_v; one];
-            
+
             % Record into the plot
             x_i((i-1)*npoints+1 : i*npoints) = xy_i(1, :);
             y_i((i-1)*npoints+1 : i*npoints) = xy_i(2, :);
         end
         % ------end of your point transformation algorithm-------
-        
+
     end
     if n == 1
         plot(x_i, y_i, 'r.')

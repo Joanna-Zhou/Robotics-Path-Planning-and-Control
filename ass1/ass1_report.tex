@@ -123,7 +123,7 @@ The algorithm estimates the pose of robot using wheel odometry data, which is co
 The algorithm in this part remains the same as that in the previous part, with an addition of noise that simulates the real wheel odometry. We randomly sample 100 instances with from such noise and plot the 100 resulting paths in Figure 2. A few observations are worth being discussed:
 \begin{itemize}
     \item Obviously, the paths starts at the same point as the ground truth and continues to diverge away from it, while the general trend still follows the ground truth.
-    \item Mathematically speaking, as \texttt{randn} retunes scalars drawn from the standard \textit{normal distribution}, the random instances we generated have the noise-free velocities (i.e., same as ground truth) as mean values. Therefore, the expected path should indeed match the ground truth one, while the \textbf{error propagates}.
+    \item Mathematically speaking, as \texttt{randn} retunes scalars drawn from the standard \textit{normal distribution}, the random instances we generated have the noise-free velocities (i.e., same as ground truth) as mean values. Therefore, the expected (i.e., mean) path should indeed match the ground truth one, while the \textbf{error} (i.e., variance) \textbf{error propagates}.
     \item Unlike part 1, this the result produced in this part doens't exactly match the reference solution, which makes sense since the samples are drawn randomly.
 \end{itemize}
 
@@ -137,9 +137,14 @@ The algorithm in this part remains the same as that in the previous part, with a
   \caption{Output plot from to Question 3}
 \end{figure}
 
-For the noisy odometry data, the laser data gets more uncertain the longer the robot travels. This is expected as the odometry is a form of dead reckoning so the variance/uncertainty grows without bound. We can see growing errors in both the mean, as the odometry data is offset from the ground truth and sometime duplicated, and the variance, as the odometry landmarks are significantly thicker which indicates higher uncertainty.
-While the two patches for angular velocity and laser position offset was applied, the resulting solution is still not as crisp as the sample solution. This does not appear to be simply a plotting error as the top-left corner is doubled in both plots, indicating some pose estimation errors in my algorithm.
+In this part, we compare the performance in both the noise-free (i.e., ground truth) and noisy odometry data. The post-processing of odometry data contains three patches:
+\begin{itemize}
+    \item \textbf{Interpolation.} We first interpolate the odometry data to align with the laser timestamps (code provided already).
+    \item \textbf{Filtering.} Only the laser scans with an angular velocity $\omega<0.1\textrm{rad/s}$ were concerned, as our interpolation wouldn't be accurate at sharp turns.
+    \item \textbf{Transformation.} We first apply a purely rotational transformation to the laser scan to turn them into the vehicle frame. Then, we apply a homogeneous transformation (i.e., rotation \& linear displacement including the laser sensor's 10 cm offset) to have everything in the inertial frame.
+\end{itemize}
 
+From the resulting plot, we can see that the odometry share the same general shape as the ground truth but with some offset, as expected. The offset didn't effect the detection of obstacles, corners, or doors, etc. This indicates both that the odometry algorithm works correctly and that the the uncertainty/error indeed propagates. In fact, without prior knowledge of the starting point, we can still make a good guess on where the robot started - somewhere around $(4, -2)$ - and even how it traversed the space, purely based on how accurately and precisely our odometry predicts the pose.
 
 %----------------------------------------------------------------------------------------
 %	Appendix
