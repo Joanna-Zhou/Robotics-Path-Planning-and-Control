@@ -101,24 +101,31 @@
   \caption{Output plot from to Question 1}
 \end{figure}
 
-The plot of the position is identical to the ground. As expected from noise free data, there is little to none uncertainty in the wheel encoder readings. There is very little offset from the true path taken, though the position error does still increase over time. Most of the error likely comes from the finite nature of the data as there is no noise or slippage in the encoder readings.
-The most notable error is the heading of the robot which diverges from the ground truth at the middle and end of the trajectory. This is likely due to the way the robot measures the ground truth heading.
-Since the odometry algorithm is incremental, it is impossible for the heading to suddenly jump by two pi. The measured, true heading on the other hand is effected by the specifications of the sensor or Gazebo software, allowing discrete jumps of two pi in the heading.
-Compared to the solution image, the position pretty much identical to the solution image. The most notable difference is the heading; where as my solution differs from the ground truth by two pi, the sample solution follows the true heading perfectly. This indicates a difference in the sample solution algorithm implementation, through for the purposes of the calculated trajectory this is not important.
+The algorithm estimates the pose of robot using wheel odometry data, which is considered \textbf{noise-free} (i.e., no slipping and no measurement precision error in the encoder) in this part. 
+\begin{itemize}
+    \item \textbf{Position.} From the path plot, the ground truth and odometry are nearly identical. The position error ranging from 0 in the beginning to about 2.6 cm at worst and grows (roughly) proportionally. That being said, the error in centimeters is negligible compared to our scale of position in meters.
+
+    \item \textbf{Heading.} The heading is quite accurate in the beginning as well, until around 230 seconds where there is a small period of offset. The same offset (i.e., $\sim2\pi$) occurred after 250 as well. Since the offset is essentially a full round, the offset is unlikely to be caused by an error; instead, it is likely due to the way that ROS/Gazebo/Turtlebot is designed, which seems to favor smaller angle changes (i.e., increment by $\delta\theta$ instead of $\delta\theta-2\pi$ if $|\delta\theta|<|\delta\theta-2\pi|$). However, none of such offset (or any offset of an integer number of full circles) would have an impact when we determine the pose of robot, as $\theta$ and $\theta\pm2\pi$ are practically equal to each other.
+    
+    From the error plot, we can see that the $2\pi$ offset was indeed not taken into account. Instead, we get a bunch of small errors. Through comparison with the heading plot, we can see that these small errors occur at sudden direction changes - the larger the increment/decrement in heading, the larger the error. This totally makes sense as the robot might needs to overshoot a little bit, physically, when as it changes its heading.
+\end{itemize}
 
 %----------------------------------------------------------------------------------------
 %	Q2
 %----------------------------------------------------------------------------------------
-\section{Noisy Wheel Odometry} % The * makes it an unnumbered section
+\section{Noisy Wheel Odometry} 
 \begin{figure}[hbt]
   \centering
     \includegraphics[width=0.9\textwidth]{ass1_q2.png}
   \caption{Output plot from to Question 2}
 \end{figure}
 
-As we can see from the numerous odometry runs, the divergence of the odometry pose from the true path grows over distance travel. While the mean of the 100 runs is centered around the ground truth, the final position error for some of the paths is close to 1 meter, indicating high uncertainty.
-If we view the multiple runs as particles, we see the uncertainty grow without bound as the particles spread further apart and there is no way to tell which of the possible trajectories is the correct one.
-The image looks identical the sample solution image so no comments will be made.
+The algorithm in this part remains the same as that in the previous part, with an addition of noise that simulates the real wheel odometry. We randomly sample 100 instances with from such noise and plot the 100 resulting paths in Figure 2. A few observations are worth being discussed:
+\begin{itemize}
+    \item Obviously, the paths starts at the same point as the ground truth and continues to diverge away from it, while the general trend still follows the ground truth.
+    \item Mathematically speaking, as \texttt{randn} retunes scalars drawn from the standard \textit{normal distribution}, the random instances we generated have the noise-free velocities (i.e., same as ground truth) as mean values. Therefore, the expected path should indeed match the ground truth one, while the \textbf{error propagates}.
+    \item Unlike part 1, this the result produced in this part doens't exactly match the reference solution, which makes sense since the samples are drawn randomly.
+\end{itemize}
 
 %----------------------------------------------------------------------------------------
 %	Q3
