@@ -87,16 +87,42 @@ axis off;
 M = getframe;
 writeVideo(vid,M);
 
+% Other variables and quantities
+nsamples =  length(t_laser);
+cos_angles = cos(angles);
+sin_angles = sin(angles);
+one = ones(1, npoints);
+
 % loop over laser scans (every fifth)
 for i=1:5:size(t_laser,1)
     
     % ------insert your occupancy grid mapping algorithm here------
+    % Step 0. Remove all nan values from the laser scan
+    y_laser(isnan(y_laser)) = [];
 
+    % Step 1. Transform frames from laser -> robot (v) -> inertial (i) -> grid (g)
+    % 1.1 laser -> robot (vehicle) 
+    x_v = y_laser(i,:) .* cos_angles - 0.1;     % Note laser is 10 cm behind origin of frame v's origin
+    y_v = y_laser(i,:) .* sin_angles;
 
-    
-    
-    
-    
+    % 1.2 vehicle -> inertial
+    robot_sin_i = sin(theta_interp(i));         % Vehecle's current position/orientation in inertial frame
+    robot_cos_i = cos(theta_interp(i));         % Convention: x_,y_ for laser scanned "obstacle"
+    robot_x_i = x_interp(i);                    %             robot_ for vehicle pose
+    robot_y_i = y_interp(i);
+    H_iv = [robot_cos_i -robot_sin_i robot_x_i; % Homogenous matrix defining the transformation
+            robot_sin_i robot_cos_i  robot_y_i;     
+            0           0            1];
+    xy_i = H_iv*[x_v; y_v; one];
+
+    % 1.3 inertial -> grid (i.e., distance -> grid index)
+    robot_x_g = (robot_x_i-ogxmin)/ogres;
+    robot_y_g = (robot_y_i-ogymin)/ogres;
+    x_g = (xy_i(1,:)-ogxmin)/ogres;
+    y_g = (xy_i(2,:)-ogymin)/ogres;
+
+    % Step 2. Update the grid using ray tracking
+
     
     
     
