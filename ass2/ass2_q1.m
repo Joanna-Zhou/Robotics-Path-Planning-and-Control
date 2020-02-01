@@ -88,27 +88,34 @@ M = getframe;
 writeVideo(vid,M);
 
 % Other variables and quantities
-nsamples =  length(t_laser);
 cos_angles = cos(angles);
 sin_angles = sin(angles);
-one = ones(1, npoints);
+one = ones(1, npoints);     % Just for homogenroes transformatiom
+alpha = 10;                 % log-odd of occupied cell (+)
+beta = 1;                   % log-odd of occupied free cell (-)
 
 % loop over laser scans (every fifth)
 for i=1:5:size(t_laser,1)
     
     % ------insert your occupancy grid mapping algorithm here------
-    % Step 0. Remove all nan values from the laser scan
-    y_laser(isnan(y_laser)) = [];
+%     if abs(omega_interp(i)) < 0.1
+%         continue;
+%     end 
+
+    % Step 0. Preprocess the laser scans
+    y_laser_t = y_laser(i,:);               % Get the laser scans at time t
+    y_laser_t(y_laser_t<r_min_laser) = NaN; % Remove all invalid values from the laser scan
+    y_laser_t(y_laser_t>r_max_laser) = NaN;
 
     % Step 1. Transform frames from laser -> robot (v) -> inertial (i) -> grid (g)
     % 1.1 laser -> robot (vehicle) 
-    x_v = y_laser(i,:) .* cos_angles - 0.1;     % Note laser is 10 cm behind origin of frame v's origin
-    y_v = y_laser(i,:) .* sin_angles;
+    x_v = y_laser_t .* cos_angles - 0.1;    % Note laser is 10 cm behind origin of frame v's origin
+    y_v = y_laser_t .* sin_angles;
 
     % 1.2 vehicle -> inertial
-    robot_sin_i = sin(theta_interp(i));         % Vehecle's current position/orientation in inertial frame
-    robot_cos_i = cos(theta_interp(i));         % Convention: x_,y_ for laser scanned "obstacle"
-    robot_x_i = x_interp(i);                    %             robot_ for vehicle pose
+    robot_sin_i = sin(theta_interp(i));     % Vehecle's current position/orientation in inertial frame
+    robot_cos_i = cos(theta_interp(i));     % Convention: x_,y_ for laser scanned "obstacle"
+    robot_x_i = x_interp(i);                %             robot_ for vehicle pose
     robot_y_i = y_interp(i);
     H_iv = [robot_cos_i -robot_sin_i robot_x_i; % Homogenous matrix defining the transformation
             robot_sin_i robot_cos_i  robot_y_i;     
@@ -116,57 +123,43 @@ for i=1:5:size(t_laser,1)
     xy_i = H_iv*[x_v; y_v; one];
 
     % 1.3 inertial -> grid (i.e., distance -> grid index)
-    robot_x_g = (robot_x_i-ogxmin)/ogres;
+    robot_x_g = (robot_x_i-ogxmin)/ogres;   % Scalars
     robot_y_g = (robot_y_i-ogymin)/ogres;
-    x_g = (xy_i(1,:)-ogxmin)/ogres;
+    x_g = (xy_i(1,:)-ogxmin)/ogres;         % Arrays
     y_g = (xy_i(2,:)-ogymin)/ogres;
 
-    % Step 2. Update the grid using ray tracking
+    % Step 2. Update the grid using ray tracking of each (j-th) laser ray, in log-odds form
+    for j = 1:npoints
+        if isnan(x_g(j)) || isnan(y_g(j))   % Only use valid measurements
+            continue;
+        end
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+        % 2.1 Break laser into segments (in x, y grids)
+        nsegments = round(y_laser_t(j)/ogres);
+        segs_x_g = round(linspace(robot_x_g, x_g(j), nsegments));
+        segs_y_g = round(linspace(robot_y_g, y_g(j), nsegments));
+
+        % 2.2 Mark all segments up till the scanned obstacle as free (-beta)
+        %     and the obstacle as occupied (+alpha)
+        for k = 1:nsegments-1
+            oglo(segs_y_g(k), segs_x_g(k)) = oglo(segs_y_g(k), segs_x_g(k)) - beta;
+        end
+        oglo(segs_y_g(nsegments), segs_x_g(nsegments)) = oglo(segs_y_g(nsegments), segs_x_g(nsegments)) + alpha;
+    end   
+
+    % Step 3. Threshold the grids based on tendency (posterior vs. prior), in probability form
+    %         Only update those with increasing likelihood
+%     ogp = exp(oglo)./(1+exp(oglo));
+    ogp_post = exp(oglo)./(1+exp(oglo));
+    for y = 1:ogny
+        for x = 1:ognx
+            if ogp_post(y,x)>ogp(y,x) && ogp_post(y,x)>=0.5     % Occupieed
+                ogp(y,x) = ogp_post(y,x);
+            elseif ogp_post(y,x)<ogp(y,x) && ogp_post(y,x)<0.5  % Free
+                ogp(y,x) = ogp_post(y,x);
+            end
+        end
+    end
     % ------end of your occupancy grid mapping algorithm-------
 
     % draw the map
