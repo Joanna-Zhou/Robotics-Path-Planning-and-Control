@@ -97,6 +97,7 @@ u_noise = 0.2;          % noise on lateral speed for propagating particle
 omega_noise = 0.04;     % noise on rotational speed for propagating particle
 laser_var = 0.5^2;      % variance on laser range distribution
 w_gain = 10*sqrt( 2 * pi * laser_var );     % gain on particle weight
+ogp_threshold = 0.5;    % minimum probability reuired to declare that the grid is occupied
 
 % generate an initial cloud of particles
 x_particle = x_true(1) + 0.5*randn(nparticles,1);
@@ -192,50 +193,39 @@ for i=2:size(t_laser,1)
                 j = 640;
             end
             
-            % ------insert your particle filter weight calculation here ------
+            % ------insert your particle filter weight calculation here ------\
+            % Step 0. Rule out invalid scans and, if valid, prepare some variables
+            laser_dist_measured = y_laser(i, j);
+            if isnan(laser_dist_measured) || laser_dist_measured > y_laser_max || laser_dist_measured < r_min_laser
+                continue
+            end
+            laser_dist_segs = r_min_laser:ogres:laser_dist_measured;        % Breaks laser into segments of grid size
+            x_particle_g = x_particle(n)-ogxmin;
+            y_particle_g = y_particle(n)-ogymin;
+            T_lg = T(1:2, 1:2) * [cos(angles(j)); sin(angles(j))];          % Transformation from laser dist to inertial frame
+            
+            % Step 1. Step from the pasticle to its furthest laser range and find the laser range w/ pose estimate
+            for k = 1:length(laser_dist_segs)
+                laser_dist_estimated = laser_dist_segs(k);
+                likelihood = 1.0; 
 
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
+                % 1.1 Estimate laser distance based on particle position
+                laser_xy = T_lg * laser_dist_estimated;  % Transform from laser -> robot -> inertial -> grid
+                x_g = round((x_particle_g + laser_xy(1))/ogres);            % Estimated obstacle location 
+                y_g = round((y_particle_g + laser_xy(2))/ogres);            %    given pose == particle && range = laser_dist_segs(k)
+                if x_g > size(ogp,2) || y_g > size(ogp,1) || isnan(x_g) || isnan(y_g) || x_g<1 || y_g<1
+                    break                                                   % Stop if going out of map
+                end
+
+                % 1.2 Weight = (Gaussian) likelihood of measurement @ t, given map and current pose estimate (of particle)
+                if ogp(y_g, x_g) >= ogp_threshold                           % If grid is occupied => estimated dist is right there
+                    likelihood = normpdf(laser_dist_measured, laser_dist_estimated, laser_var);
+                    break
+                end
+            end
+
+            % Step 3. Update weight - multiplying it by each beam's weight gain
+            w_particle(n) = w_particle(n) * likelihood * w_gain;
             % ------end of your particle filter weight calculation-------
         end
         
