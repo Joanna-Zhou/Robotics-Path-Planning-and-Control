@@ -1,9 +1,10 @@
 # Fdb version 3
-["pdflatex"] 1580782443 "ass2_report.tex" "/Users/joanna.zyz/ROB521Assignments/ass2/ass2_report.pdf" "ass2_report" 1580782446
+["pdflatex"] 1580789208 "ass2_report.tex" "/Users/joanna.zyz/ROB521Assignments/ass2/ass2_report.pdf" "ass2_report" 1580789210
   "../Background.jpeg" 1578543397 51481 f8c383993be8b94cabdc40f31953ae32 ""
-  "/Users/joanna.zyz/ROB521Assignments/ass2/ass2_report.aux" 1580782445 1290 6b1e7533801338c19e0e63108695ae4c ""
+  "/Users/joanna.zyz/ROB521Assignments/ass2/ass2_report.aux" 1580789210 1275 8c397e3f09ee917fa71b101224c1412c ""
   "/usr/local/texlive/2018/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc" 1480098668 2375 baa924870cfb487815765f9094cf3728 ""
   "/usr/local/texlive/2018/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc" 1480098668 2405 5dcf2c1b967ee25cc46c58cd52244aed ""
+  "/usr/local/texlive/2018/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc" 1480098668 2840 216e6e45ad352e2456e1149f28885bee ""
   "/usr/local/texlive/2018/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc" 1480098668 2327 9d6df24f9c4f7368395224341a95523a ""
   "/usr/local/texlive/2018/texmf-dist/fonts/map/fontname/texfonts.map" 1511824771 3332 103109f5612ad95229751940c61aada0 ""
   "/usr/local/texlive/2018/texmf-dist/fonts/tfm/jknappen/ec/ecrm1000.tfm" 1480098696 3584 adb004a0c8e7c46ee66cad73671f37b4 ""
@@ -47,6 +48,7 @@
   "/usr/local/texlive/2018/texmf-dist/fonts/type1/public/lm/lmmi10.pfb" 1480098742 30388 702fae6a5f0e6e9c48a1d872b442ffcf ""
   "/usr/local/texlive/2018/texmf-dist/fonts/type1/public/lm/lmr10.pfb" 1480098742 119235 f35b44530a1d90eb90fe15d9cba67ea0 ""
   "/usr/local/texlive/2018/texmf-dist/fonts/type1/public/lm/lmr5.pfb" 1480098742 120387 212cad1e763d510fc9c3ce2466274a57 ""
+  "/usr/local/texlive/2018/texmf-dist/fonts/type1/public/lm/lmsy10.pfb" 1480098742 27863 09ce3735688ffde955e72da27c95b61a ""
   "/usr/local/texlive/2018/texmf-dist/fonts/type1/public/lm/lmtk10.pfb" 1480098742 117319 7f8361f845845ce6d5b36cbd9f9cf377 ""
   "/usr/local/texlive/2018/texmf-dist/fonts/type1/public/lm/lmtt10.pfb" 1480098742 113227 1010e11451afc2822c95dae77c390042 ""
   "/usr/local/texlive/2018/texmf-dist/fonts/type1/public/lm/lmtt12.pfb" 1480098742 110323 92daea7ca7b4120bd2b54b047c93be27 ""
@@ -197,12 +199,12 @@
   "ass2_q1_a10b1_post_best.png" 1580772472 26302 a3bb0aa199002196caa72473f7223a91 ""
   "ass2_q2.m" 1580743151 12266 37924be2b4775fcf845004dbcc67bf6b ""
   "ass2_q2.png" 1580742744 58626 090e8597fc8d7a15f62e60a14d469d44 ""
-  "ass2_report.aux" 1580782445 1290 6b1e7533801338c19e0e63108695ae4c ""
-  "ass2_report.tex" 1580782440 9386 a9cd4ed679e4b250a92972fa4c08f8b2 ""
+  "ass2_report.aux" 1580789210 1275 8c397e3f09ee917fa71b101224c1412c ""
+  "ass2_report.tex" 1580789204 9561 27a155bd4e332a2424c98c26c7aa16b8 ""
   (generated)
-  "/Users/joanna.zyz/ROB521Assignments/ass2/ass2_report.log"
   "ass2_report.pdf"
-  "ass2_report.aux"
+  "/Users/joanna.zyz/ROB521Assignments/ass2/ass2_report.log"
+  "/Users/joanna.zyz/ROB521Assignments/ass2/ass2_report.aux"
   "ass2_report.log"
   "/Users/joanna.zyz/ROB521Assignments/ass2/ass2_report.pdf"
-  "/Users/joanna.zyz/ROB521Assignments/ass2/ass2_report.aux"
+  "ass2_report.aux"

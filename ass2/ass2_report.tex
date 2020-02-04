@@ -168,7 +168,7 @@ I ended up choosing $\alpha:\beta=10:1$ and the heuristic with both absolute pro
 \begin{figure}[hbt]
   \centering
     \includegraphics[width=1.0\textwidth]{ass2_q1.png}
-  \caption{Final output plot from Question 1}
+  \caption{Final Output Plot from Question 1}
   \label{fig:q1}
 \end{figure}
 
@@ -181,14 +181,17 @@ I ended up choosing $\alpha:\beta=10:1$ and the heuristic with both absolute pro
 \begin{figure}[hbt]
   \centering
     \includegraphics[width=0.9\textwidth]{ass2_q2.png}
-  \caption{$\alpha = 10, \beta = 1$ with posterior update}
+  \caption{Comparison Plot from Question 2}
 \end{figure}
 
-In the beginning, the odometry estimate is slightly better the particle filter, as there is little drift in the odometry so far. Near the end of trajectory, the particle filter has trouble estimating the once again, though this time it is significantly lower than the odometry data. This is expected, the divergence of the odometry pose from the true path grows over distance travel.
-The growth in error for certain portions likely has to do with the ambiguity of the rooms and the limits of the laser, which caps at 5 meters. With similar features and only a single range value, it is easy for erroneous particles to have high weights. Perhaps with the full 640 angles of laser data, the particle filter will do much better.
+The result from the particle filter compared to the odometry is fairly desirable; though it is difference from the reference solution due to different parameters chosen and random state, the error stayed around $\sim0.1, 0.2$ and peaks at $\sim0.4$. Some other observations:
+\begin{itemize}
+  \item From the video, we can see that the particles are more scattered in the beginning, though the centroid has already got close enough to the robot since the very first iteration. It quickly converged to the centroid - the speed of convergence depends on the weight gain. A smaller one would result in a smaller divergence, while a larger one might lead to inconsistencies.
+  \item It is always during a turn when the error gets larger and the particles spread out. This makes sense since since the laser scans would be more inconsistent and ambiguous at a turn, especially as the laser scan has a maximum range.
+  \item It is also always during a bottleneck that the error decreases and the particles converge. This is likely because of the smaller laser distance - even if the estimated measurement has the same error ratio, the absolute error would likely be smaller.
+\end{itemize}
 
-The solution error is significantly lower in the beginning and end of the plot; it appears the solution model is more robust to changes in the location compared to my code.
-As I am using the same parameters, provided by the model, the main difference should lie in the observation model. I estimated the expected sensor data from the particle using a ray extending from the laser scan pose, incrementally increasing the length of the ray and checking for obstacles.
+Potential improvements include using a laser device with a higher maximum range, decreasing the delay between each time step, and using more particles (with a trade-off of a higher computational cost).
 
 %----------------------------------------------------------------------------------------
 %	Appendix
