@@ -142,29 +142,42 @@
 \label{fig:q1_a100}
 \end{figure}
 
-\begin{figure}[hbt]
-  \centering
-    \includegraphics[width=1.0\textwidth]{ass2_q1.png}
-  \caption{Output plot from to Question 1}
-\end{figure}
-
 The occupancy grids are iteratively updated by the laser scans at each time step. Each laser beam is divided into segments roughly the length of the grids, ranging from the closest to the furthest from the robot:
 \begin{itemize}
   \item The furthest laser segment is the obstacle, which blocked the laser beam from reaching further. We add $\alpha$ to the corresponding grid's log-odd value, indicating an increased probability that it is occupied.
   \item Conversely, all the other segments correspond to free space, and we therefore subtract $\beta$ from their log-odd values.
 \end{itemize}
 
-While the algorithm is very straightforward, I tuned the $\alpha, \beta$ values and compared the results (fig.\ref{fig:q1_a1}\ref{fig:q1_a10}\ref{fig:q1_a100}). We can see that a smaller $\alpha:\beta$ ratio (fig.\ref{fig:q1_a1}) allows the free-space readings to easily override the previous occupancy reading, resulting in missing walls and obstacles. Conversely, a $\alpha:\beta$
-The 
-Picking a higher resolution for the rays, which are used to update the grid, reduced raggedness, but it decreased the number of walls in the map.
-Another issue that occurred is picking the correct alpha and beta, which is causing the missing walls in some parts of the map. A small alpha is easily overwritten by the beta values from the newer updates; a very large alpha has very inconsistent behavior, leaving large portions of the map without walls.
-Overall, the map is pretty accurate.
+While the algorithm is very straightforward, I tuned the $\alpha, \beta$ values and compared the results (fig.\ref{fig:q1_a1}, \ref{fig:q1_a10}, \ref{fig:q1_a100}). We can see that,
+\begin{itemize}
+  \item In term of $\alpha:\beta$ ratio:
+  \begin{itemize}
+    \item A smaller $\alpha:\beta$ ratio (fig.\ref{fig:q1_a1}) allows the free-space readings to easily overwrite the previous occupancy reading, resulting in missing walls and obstacles - in fact, the four smaller dots in the bottom-left corner are completely gone.
+    \item Conversely, a large $\alpha:\beta$ (fig.\ref{fig:q1_a100}) also results in missing walls, but instead of simply overwriting the probability of occupancy, the behaviour is more inconsistent.
+  \end{itemize} 
+  \item In term of updating heuristic:
+  \begin{itemize}
+    \item The left ones update the grid values according to the absolute probability values at each time step, while the right ones' heuristic also requires a tendency. That is, for a grid to be marked occupied, its probability needs to be not only $>50\%$, but also larger than its previous probability (i.e., from the last time step), and vice versa.
+    \item We can see, especially from fig.\ref{fig:q1_a10} and \ref{fig:q1_a100}, that using the heuristic with both absolute and relative probability results in a much more consistent result. For example, the walls are less fuzzy.
+    \item That being said, the heuristic can't solve the problems from an inappropriate $\alpha:\beta$ ratio (i.e., walls are still missing in fig.\ref{fig:q1_a100}).
+  \end{itemize}
+\end{itemize} 
+
+I ended up choosing $\alpha:\beta=10:1$ and the heuristic with both absolute probability and tendency, which is shown in fig.\ref{fig:q1}. To further improve the map accuracy, we could simply increase the grid resolution and let the robot explore more, as currently there are apparently some areas that haven't been coved by the laser scans.
+
+\begin{figure}[hbt]
+  \centering
+    \includegraphics[width=1.0\textwidth]{ass2_q1.png}
+  \caption{Final output plot from Question 1}
+  \label{fig:q1}
+\end{figure}
+
 
 
 %----------------------------------------------------------------------------------------
 %	Q2
 %----------------------------------------------------------------------------------------
-\section{Noisy Wheel Odometry} 
+\section{Noisy Wheel Odometry}
 \begin{figure}[hbt]
   \centering
     \includegraphics[width=0.9\textwidth]{ass2_q2.png}
