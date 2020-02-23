@@ -26,7 +26,7 @@ function vo()
     clear all;
 
     % watch the included video, 
-    load matches.mat;
+    load matches.mat matches;
     imax = size(matches,2);
 
     % stereo camera parameters
@@ -165,13 +165,31 @@ function [C, r] = compute_motion( p1, p2 )
 
     % ------insert your motion-from-two-pointclouds algorithm here------
 
-    
-    
-    C = eye(3);     % temporary to make script run
-    r = zeros(3,1); % temporary to make script run
-   
-    
-    
+    n = size(p1, 2);
+
+    % If there's no point or different number of points
+    if (n == 0) || (n ~= size(p2, 2))
+        C = eye(3);     % temporary to make script run
+    	r = zeros(3,1); % temporary to make script run
+    else
+        % Centriod of points
+        c1 = mean(p1, 2);
+        c2 = mean(p2, 2);
+        
+        % Scalar-Weighted Point Cloud Alignment's outer product matrix
+        diff1 = bsxfun(@minus, p1, c1);
+        diff2 = bsxfun(@minus, p2, c2);
+        W = diff2 * diff1' / n;
+            
+        % SVD decomposition
+        [V,~,U] = svd(W);
+        
+        % Compose rotation and translation from SVD
+        M = [1 0 0; 0 1 0; 0 0 det(U)*det(V)];
+        C = V * M * U';
+        r = -C'*c2 + c1;
+    end
+
     % ------end of your motion-from-two-pointclouds algorithm-------
     
 end
