@@ -1,6 +1,0 @@
-####### Requirements for ROB521 - Lab 3 ########
-
-numpy
-scipy
-opencv-python
-matplotlib
