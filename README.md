@@ -1,32 +1,24 @@
-# ROB521Assignments
+# Robotics Path Planning and Control
 
-Welcome to the **ROB521Assignments** repository! This repository contains the assignments and projects completed for the ROB521 course, focusing on advanced robotics algorithms and applications. It showcases practical solutions to various challenges in the field of robotics.
+Welcome to my repository! This repository contains the assignments and projects completed for the ROB521 course, focusing on advanced robotics algorithms and applications. It showcases practical solutions to various challenges in the field of robotics.
 
 ## Table of Contents
 
 - [Overview](#project-overview)
-- [Technologies Used](#technologies-used)
-- [Key Topics Covered](#key-topics-covered)
-- [Projects](#assignments-and-projects)
+- [Tools](#tools)
+- [Projects](#projects)
 
-  
+
 ## Project Overview
 
 This repository includes a collection of assignments and projects aimed at exploring and implementing advanced robotics algorithms. The work spans several core topics in robotics, including path planning, localization, and control systems.
 
-## Technologies Used
+## Tools
 
 - **MATLAB**: For algorithm development and data analysis.
 - **LaTeX**: For documenting assignments and results.
-
-## Key Topics Covered
-
-- **Path Planning**: Implementation of A*, Dijkstra's, and other algorithms.
-- **Localization**: Use of particle filters and Kalman filters.
-- **Control Systems**: Development of PID control and feedback systems.
-- **Data Analysis**: Techniques in signal processing and sensor fusion.
-
-## Assignments and Projects
+  
+## Projects
 
 Here is a list of the main projects included in this repository:
 
